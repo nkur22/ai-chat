@@ -1,10 +1,6 @@
-const express = require("express");
-const app = express();
-
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.send("AI app is live 🚀");
-});
-
-module.exports = app;
+export default function handler(req, res) {
+    res.status(200).json({
+      message: "API is live 🚀"
+    });
+  }
+  

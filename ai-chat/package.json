@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "ai-chat",
   "version": "1.0.0",
   "description": "Simple Node.js + Express AI chat demo",
