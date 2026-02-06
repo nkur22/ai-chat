@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="card">
+        <header class="card-header">
+          <h1>AI Chat Demo</h1>
+          <p>Ask a question and get an AI-powered answer.</p>
+        </header>
+
+        <main>
+          <form id="question-form" class="form">
+            <label for="question" class="label">Your question</label>
+            <textarea
+              id="question"
+              name="question"
+              class="input"
+              rows="3"
+              placeholder="e.g. Explain JavaScript promises in simple terms."
+            ></textarea>
+
+            <button type="submit" class="button" id="submit-button">
+              Ask AI
+            </button>
+          </form>
+
+          <div id="status" class="status" aria-live="polite"></div>
+
+          <section class="response">
+            <h2 class="response-title">AI response</h2>
+            <div id="answer" class="response-body">
+              <p class="placeholder">Your answer will appear here.</p>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+  </html>
+
