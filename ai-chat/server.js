@@ -73,6 +73,90 @@ app.post('/api/ask', async (req, res) => {
   }
 });
 
+app.post('/api/resume', async (req, res) => {
+  const { resume, job_description } = req.body || {};
+
+  if (!resume || !job_description) {
+    return res.status(400).json({
+      error: 'Both resume and job_description are required.'
+    });
+  }
+
+  if (!CLAUDE_API_KEY) {
+    return res.status(500).json({
+      error: 'Server is not configured with CLAUDE_API_KEY.'
+    });
+  }
+
+  const prompt = `
+You are a senior recruiter and resume coach.
+
+TASK:
+Tailor the resume to the job description.
+
+OUTPUT STRICTLY IN JSON WITH THIS SHAPE:
+{
+  "tailored_bullets": ["bullet 1", "bullet 2", "bullet 3"],
+  "recruiter_pitch": "5 lines max",
+  "interview_talking_points": ["STAR hint 1", "STAR hint 2"]
+}
+
+RULES:
+- Use ATS-friendly language
+- Quantify impact where possible
+- Do NOT invent experience
+- Keep bullets concise
+
+RESUME:
+${resume}
+
+JOB DESCRIPTION:
+${job_description}
+`;
+
+  try {
+    const response = await axios.post(
+      'https://api.anthropic.com/v1/messages',
+      {
+        model: CLAUDE_MODEL,
+        max_tokens: 800,
+        temperature: 0.3,
+        messages: [
+          {
+            role: 'user',
+            content: [{ type: 'text', text: prompt }]
+          }
+        ]
+      },
+      {
+        headers: {
+          'x-api-key': CLAUDE_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json'
+        }
+      }
+    );
+
+    const rawText =
+      response?.data?.content?.[0]?.type === 'text'
+        ? response.data.content[0].text
+        : '';
+
+    // Defensive JSON extraction (Claude sometimes adds prose)
+    const start = rawText.indexOf('{');
+    const end = rawText.lastIndexOf('}');
+    const parsed = JSON.parse(rawText.slice(start, end + 1));
+
+    res.json(parsed);
+  } catch (err) {
+    console.error('Resume agent error:', err.response?.data || err.message);
+    res.status(500).json({
+      error: 'Failed to generate resume output.'
+    });
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
